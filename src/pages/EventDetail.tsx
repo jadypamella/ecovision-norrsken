@@ -109,6 +109,24 @@ const EventDetail = () => {
             </div>
           </div>
 
+          {/* Detected Animal Frame for Wildlife Events */}
+          {event.type === 'wildlife' && event.thumbnailUrl && (
+            <div className="eco-card mb-6">
+              <h3 className="font-semibold text-foreground mb-4">Detected Animal Frame</h3>
+              <div className="rounded-lg overflow-hidden bg-muted border border-border">
+                <img 
+                  src={event.thumbnailUrl} 
+                  alt="Animal detection frame"
+                  className="w-full max-h-96 object-contain"
+                  loading="lazy"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground mt-3">
+                Frame captured at {event.location?.split('(')[1]?.split(')')[0] || 'detection timestamp'}
+              </p>
+            </div>
+          )}
+
           {/* Event Details Grid */}
           <div className="grid sm:grid-cols-2 gap-6 mb-6">
             {/* Metadata */}

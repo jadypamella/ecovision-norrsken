@@ -63,6 +63,18 @@ export const EventCard = ({ event, className }: EventCardProps) => {
         <SeverityBadge severity={event.severity} />
       </div>
       
+      {/* Frame Image for Wildlife Events */}
+      {event.type === 'wildlife' && event.thumbnailUrl && (
+        <div className="mb-4 rounded-lg overflow-hidden bg-muted">
+          <img 
+            src={event.thumbnailUrl} 
+            alt="Detected animal"
+            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+          />
+        </div>
+      )}
+      
       {/* Content */}
       <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
         {event.title}

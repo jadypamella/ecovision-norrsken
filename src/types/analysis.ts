@@ -12,6 +12,7 @@ export interface TimelineEvent {
   category: RiskCategory;
   description: string;
   riskLevel: 'low' | 'medium' | 'high';
+  frameUrl?: string; // Data URL of extracted frame (for wildlife events)
 }
 
 export interface AnalysisResult {
@@ -26,6 +27,7 @@ export interface AnalysisResult {
   aggregated?: string;
   createdAt: Date;
   completedAt?: Date;
+  videoUrl?: string; // Blob URL of the original video file for frame extraction
 }
 
 export interface FileUploadResponse {

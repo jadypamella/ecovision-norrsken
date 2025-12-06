@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { uploadVideo, generateCaptions, summarizeVideo, chatCompletion, FOREST_PROMPTS } from '@/lib/vss-api';
 import type { AnalysisResult, TimelineEvent, RiskCategory } from '@/types/analysis';
+import { extractFrameAtTimestamp, createVideoBlobUrl } from '@/lib/video-utils';
 import { toast } from 'sonner';
 
 function parseAggregatedResults(text: string): TimelineEvent[] {
@@ -141,10 +142,36 @@ export function useVideoAnalysis() {
       const events = parseAggregatedResults(aggregated);
       console.log('Parsed events:', events);
       
+      // Store video blob URL for frame extraction
+      const videoUrl = createVideoBlobUrl(file);
+      
+      // Extract frames for wildlife events (90-100%)
+      setAnalysis(prev => prev ? { ...prev, progress: 90 } : null);
+      toast.info('Extracting frames for wildlife detections...');
+      
+      const eventsWithFrames = await Promise.all(
+        events.map(async (event) => {
+          // Only extract frames for wildlife events
+          if (event.category === 'wildlife') {
+            try {
+              console.log(`Extracting frame for wildlife event at ${event.startTime}`);
+              const frameUrl = await extractFrameAtTimestamp(file, event.startTime);
+              return { ...event, frameUrl };
+            } catch (error) {
+              console.error(`Failed to extract frame for event ${event.id}:`, error);
+              // Continue without frame if extraction fails
+              return event;
+            }
+          }
+          return event;
+        })
+      );
+      
       const completedAnalysis: AnalysisResult = {
         ...newAnalysis,
         aggregated,
-        events,
+        events: eventsWithFrames,
+        videoUrl,
         progress: 100,
         status: 'completed',
         completedAt: new Date()

@@ -66,6 +66,7 @@ function convertToSafetyEvent(event: TimelineEvent, analysisId: string, fileName
     confidence: event.riskLevel === 'high' ? 0.9 : event.riskLevel === 'medium' ? 0.75 : 0.6,
     timestamp: new Date().toISOString(),
     location: `${fileName} (${event.startTime} - ${event.endTime})`,
+    thumbnailUrl: event.frameUrl, // Use extracted frame as thumbnail for wildlife events
     flightId: analysisId, // Link to the analysis
   };
 }
