@@ -18,21 +18,28 @@ import {
   Sparkles
 } from 'lucide-react';
 
+import jadyPhoto from '@/assets/team/jady.jpg';
+import supunPhoto from '@/assets/team/supun.jpg';
+import phuwitPhoto from '@/assets/team/phuwit.jpg';
+
 const teamMembers = [
   {
     name: 'Jady Pamella',
     linkedin: 'https://www.linkedin.com/in/jadypamella/',
-    tagline: 'AI, Cybersecurity & IT Consultant'
-  },
-  {
-    name: 'Phuwit Vititayanon',
-    linkedin: 'https://www.linkedin.com/in/phuwit-vititayanon-4b6503157/',
-    tagline: 'AI maker, Data Scientist'
+    tagline: 'AI, Cybersecurity & IT Consultant',
+    photo: jadyPhoto
   },
   {
     name: 'Supun Chathuranga',
     linkedin: 'https://www.linkedin.com/in/supun-chathuranga-190372148/',
-    tagline: 'AI Engineer'
+    tagline: 'AI Engineer',
+    photo: supunPhoto
+  },
+  {
+    name: 'Phuwit Vititayanon',
+    linkedin: 'https://www.linkedin.com/in/phuwit-vititayanon-4b6503157/',
+    tagline: 'AI maker, Data Scientist',
+    photo: phuwitPhoto
   }
 ];
 
@@ -148,10 +155,12 @@ const Fixathon = () => {
                   rel="noopener noreferrer"
                   className="eco-card group hover:border-primary/50 text-center"
                 >
-                  <div className="w-20 h-20 bg-gradient-to-br from-primary to-eco-forest-mist rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                    <span className="text-2xl font-bold text-primary-foreground">
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </span>
+                  <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden border-4 border-primary/20 group-hover:border-primary/50 group-hover:scale-110 transition-all">
+                    <img 
+                      src={member.photo} 
+                      alt={member.name} 
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-1">{member.name}</h3>
                   <p className="text-muted-foreground text-sm mb-3">{member.tagline}</p>
