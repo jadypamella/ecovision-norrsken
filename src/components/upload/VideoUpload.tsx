@@ -1,0 +1,241 @@
+import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Upload, Video, Loader2, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { uploadVideo } from '@/services/api';
+import { cn } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
+
+export const VideoUpload = () => {
+  const navigate = useNavigate();
+  const [isDragging, setIsDragging] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleDrag = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setIsDragging(true);
+    } else if (e.type === 'dragleave') {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile && droppedFile.type.startsWith('video/')) {
+      setFile(droppedFile);
+      setError(null);
+    } else {
+      setError('Please upload a video file (MP4, AVI, MOV)');
+    }
+  }, []);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setError(null);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+    
+    setUploading(true);
+    setProgress(0);
+    setError(null);
+    
+    try {
+      const result = await uploadVideo(file, setProgress);
+      
+      if (result.success) {
+        setSuccess(true);
+        toast({
+          title: 'Analysis Complete',
+          description: `Detected ${result.events.length} safety events in your video.`,
+        });
+      }
+    } catch {
+      setError('Failed to analyze video. Please try again.');
+      toast({
+        title: 'Upload Failed',
+        description: 'There was an error processing your video.',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setFile(null);
+    setProgress(0);
+    setSuccess(false);
+    setError(null);
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      {/* Success State */}
+      {success && (
+        <div className="eco-card border-2 border-primary animate-scale-in">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <CheckCircle className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-foreground text-lg mb-2">
+                Analysis Complete
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Your drone footage has been successfully analyzed using NVIDIA VSS. 
+                Safety events have been detected and are ready for review.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() => navigate('/timeline')}
+                  className="btn-primary"
+                >
+                  View Events Timeline
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="btn-secondary"
+                >
+                  Upload Another
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Zone */}
+      {!success && (
+        <>
+          <div
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            className={cn(
+              'eco-card border-2 border-dashed transition-all duration-300',
+              isDragging ? 'border-primary bg-primary/5 scale-[1.02]' : 'border-border hover:border-primary/50',
+              uploading && 'pointer-events-none opacity-75'
+            )}
+          >
+            <div className="text-center py-8">
+              {file ? (
+                <div className="animate-fade-in">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Video className="w-8 h-8 text-primary" />
+                  </div>
+                  <p className="font-semibold text-foreground mb-1">{file.name}</p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {formatFileSize(file.size)}
+                  </p>
+                  {!uploading && (
+                    <button
+                      onClick={handleReset}
+                      className="text-sm text-muted-foreground hover:text-destructive flex items-center gap-1 mx-auto transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Upload className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <p className="text-foreground font-medium mb-2">
+                    Drag and drop your video file here
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    or click to browse files
+                  </p>
+                  <label className="btn-primary cursor-pointer">
+                    <Upload className="w-4 h-4" />
+                    Select Video File
+                    <input
+                      type="file"
+                      accept="video/mp4,video/avi,video/quicktime,video/x-msvideo"
+                      className="hidden"
+                      onChange={handleFileSelect}
+                    />
+                  </label>
+                  <p className="text-xs text-muted-foreground mt-4">
+                    Supported formats: MP4, AVI, MOV (max 2GB)
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Error State */}
+          {error && (
+            <div className="eco-card mt-4 border-destructive/50 bg-destructive/5 animate-slide-up">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0" />
+                <p className="text-destructive text-sm">{error}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Upload Button & Progress */}
+          {file && !uploading && !error && (
+            <div className="mt-6 animate-slide-up">
+              <button
+                onClick={handleUpload}
+                className="btn-primary w-full justify-center"
+              >
+                <Video className="w-5 h-5" />
+                Start AI Analysis
+              </button>
+            </div>
+          )}
+
+          {/* Processing State */}
+          {uploading && (
+            <div className="eco-card mt-6 animate-slide-up">
+              <div className="flex items-center gap-4">
+                <Loader2 className="w-6 h-6 text-primary animate-spin flex-shrink-0" />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-semibold text-foreground">Analyzing with NVIDIA VSS...</p>
+                    <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-primary h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Processing video frames and detecting safety events...
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
