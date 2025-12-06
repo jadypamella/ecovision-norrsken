@@ -8,6 +8,14 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
+// Sanitize filename to match VSS requirements: ^[A-Za-z0-9_.\- ]*$
+function sanitizeFilename(filename: string): string {
+  // Replace invalid characters with underscores
+  const sanitized = filename.replace(/[^A-Za-z0-9_.\- ]/g, '_');
+  // Ensure it's not empty
+  return sanitized || 'video.mp4';
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -31,13 +39,26 @@ serve(async (req) => {
 
     switch (action) {
       case "upload": {
-        // Forward file upload to VSS
-        const formData = await req.formData();
-        console.log("Uploading file to VSS...");
+        // Forward file upload to VSS with sanitized filename
+        const originalFormData = await req.formData();
+        const newFormData = new FormData();
         
+        for (const [key, value] of originalFormData.entries()) {
+          if (value instanceof File) {
+            // Sanitize the filename
+            const sanitizedName = sanitizeFilename(value.name);
+            console.log(`Sanitizing filename: "${value.name}" -> "${sanitizedName}"`);
+            const newFile = new File([value], sanitizedName, { type: value.type });
+            newFormData.append(key, newFile);
+          } else {
+            newFormData.append(key, value);
+          }
+        }
+        
+        console.log("Uploading file to VSS...");
         response = await fetch(`${VSS_API_URL}/v1/files`, {
           method: "POST",
-          body: formData,
+          body: newFormData,
         });
         break;
       }
