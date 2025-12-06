@@ -55,7 +55,7 @@ export function useVideoAnalysis() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const analyzeVideo = useCallback(async (file: File) => {
+  const analyzeVideo = useCallback(async (file: File): Promise<AnalysisResult | null> => {
     setIsProcessing(true);
     
     const newAnalysis: AnalysisResult = {
@@ -72,11 +72,18 @@ export function useVideoAnalysis() {
 
     try {
       // Step 1: Upload video (0-20%)
-      toast.info('Uploading video...');
+      toast.info('Uploading video to VSS...');
       setAnalysis(prev => prev ? { ...prev, progress: 10 } : null);
       
+      console.log('Starting video upload...');
       const uploadResult = await uploadVideo(file);
+      console.log('Upload result:', uploadResult);
+      
       const fileId = uploadResult.id || uploadResult.file_id;
+      if (!fileId) {
+        throw new Error('No file ID returned from upload');
+      }
+      
       newAnalysis.fileId = fileId;
       
       setAnalysis(prev => prev ? { 
@@ -87,10 +94,13 @@ export function useVideoAnalysis() {
       } : null);
 
       // Step 2: Generate captions (20-50%)
-      toast.info('Generating captions...');
+      toast.info('Generating captions with VSS...');
       setAnalysis(prev => prev ? { ...prev, progress: 35 } : null);
       
+      console.log('Generating captions for file:', fileId);
       const captionResult = await generateCaptions(fileId);
+      console.log('Caption result:', captionResult);
+      
       const rawCaptions = captionResult.caption || captionResult.summary || '';
       
       setAnalysis(prev => prev ? { 
@@ -104,7 +114,10 @@ export function useVideoAnalysis() {
       setAnalysis(prev => prev ? { ...prev, progress: 60 } : null);
       
       const summarizePrompt = FOREST_PROMPTS.summarize.replace('{captions}', rawCaptions);
+      console.log('Summarizing with prompt...');
       const summarizeResult = await summarizeVideo(fileId, summarizePrompt);
+      console.log('Summarize result:', summarizeResult);
+      
       const summary = summarizeResult.summary || summarizeResult.caption || '';
       
       setAnalysis(prev => prev ? { 
@@ -118,22 +131,29 @@ export function useVideoAnalysis() {
       setAnalysis(prev => prev ? { ...prev, progress: 85 } : null);
       
       const aggregatePrompt = FOREST_PROMPTS.aggregate.replace('{summaries}', summary);
+      console.log('Aggregating categories...');
       const aggregateResult = await chatCompletion(fileId, aggregatePrompt);
-      const aggregated = aggregateResult.choices[0]?.message?.content || '';
+      console.log('Aggregate result:', aggregateResult);
+      
+      const aggregated = aggregateResult.choices?.[0]?.message?.content || '';
       
       // Parse the aggregated results into events
       const events = parseAggregatedResults(aggregated);
+      console.log('Parsed events:', events);
       
-      setAnalysis(prev => prev ? { 
-        ...prev, 
+      const completedAnalysis: AnalysisResult = {
+        ...newAnalysis,
         aggregated,
         events,
         progress: 100,
         status: 'completed',
         completedAt: new Date()
-      } : null);
-
-      toast.success('Analysis complete!');
+      };
+      
+      setAnalysis(completedAnalysis);
+      toast.success(`Analysis complete! Detected ${events.length} events.`);
+      
+      return completedAnalysis;
       
     } catch (error) {
       console.error('Analysis error:', error);
@@ -143,6 +163,7 @@ export function useVideoAnalysis() {
         progress: 0
       } : null);
       toast.error(error instanceof Error ? error.message : 'Analysis failed');
+      return null;
     } finally {
       setIsProcessing(false);
     }
