@@ -1,9 +1,9 @@
-﻿import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Video, Loader2, CheckCircle, AlertCircle, X } from 'lucide-react';
 import { useVideoAnalysis } from '@/hooks/useVideoAnalysis';
+import { useAnalysis } from '@/contexts/AnalysisContext';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 const MIN_FILE_SIZE = 1024; // 1KB minimum
@@ -11,6 +11,7 @@ const MIN_FILE_SIZE = 1024; // 1KB minimum
 export const VideoUpload = () => {
   const navigate = useNavigate();
   const { analysis, isProcessing, analyzeVideo, resetAnalysis } = useVideoAnalysis();
+  const { addEventsFromAnalysis } = useAnalysis();
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -73,7 +74,6 @@ export const VideoUpload = () => {
   const handleUpload = async () => {
     if (!file) return;
 
-    // Double-check validation before upload
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
@@ -81,13 +81,11 @@ export const VideoUpload = () => {
     }
 
     setError(null);
-
-    try {
-      await analyzeVideo(file);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to analyze video. Please try again.';
-      setError(errorMessage);
-      toast.error(errorMessage);
+    const result = await analyzeVideo(file);
+    
+    // Add events to global context when analysis completes
+    if (result && result.status === 'completed') {
+      addEventsFromAnalysis(result);
     }
   };
 
@@ -107,10 +105,14 @@ export const VideoUpload = () => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const isCompleted = analysis?.status === 'completed';
+  const hasError = analysis?.status === 'error' || error;
+  const progress = analysis?.progress || 0;
+
   return (
     <div className="max-w-2xl mx-auto">
       {/* Success State */}
-      {analysis?.status === 'completed' && (
+      {isCompleted && (
         <div className="eco-card border-2 border-primary animate-scale-in">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -122,7 +124,9 @@ export const VideoUpload = () => {
               </h3>
               <p className="text-muted-foreground mb-4">
                 Your drone footage has been successfully analyzed using NVIDIA VSS.
-                {analysis.events.length > 0 && ` Detected ${analysis.events.length} safety events.`}
+                {analysis?.events && analysis.events.length > 0 && (
+                  <> Detected {analysis.events.length} safety events.</>
+                )}
               </p>
               <div className="flex flex-wrap gap-3">
                 <button
@@ -130,6 +134,12 @@ export const VideoUpload = () => {
                   className="btn-primary"
                 >
                   View Events Timeline
+                </button>
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="btn-secondary"
+                >
+                  View Dashboard
                 </button>
                 <button
                   onClick={handleReset}
@@ -144,7 +154,7 @@ export const VideoUpload = () => {
       )}
 
       {/* Upload Zone */}
-      {analysis?.status !== 'completed' && (
+      {!isCompleted && (
         <>
           <div
             onDragEnter={handleDrag}
@@ -170,7 +180,7 @@ export const VideoUpload = () => {
                   {!isProcessing && (
                     <button
                       onClick={handleReset}
-                      className="text-sm text-muted-foreground hover:text-destructive flex items-center gap-1 mx-auto transition-colors"       
+                      className="text-sm text-muted-foreground hover:text-destructive flex items-center gap-1 mx-auto transition-colors"
                     >
                       <X className="w-4 h-4" />
                       Remove
@@ -207,17 +217,17 @@ export const VideoUpload = () => {
           </div>
 
           {/* Error State */}
-          {error && (
+          {hasError && (
             <div className="eco-card mt-4 border-destructive/50 bg-destructive/5 animate-slide-up">
               <div className="flex items-center gap-3">
                 <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0" />
-                <p className="text-destructive text-sm">{error}</p>
+                <p className="text-destructive text-sm">{error || 'Upload failed. Please try again.'}</p>
               </div>
             </div>
           )}
 
           {/* Upload Button & Progress */}
-          {file && !isProcessing && !error && (
+          {file && !isProcessing && !hasError && (
             <div className="mt-6 animate-slide-up">
               <button
                 onClick={handleUpload}
@@ -230,24 +240,29 @@ export const VideoUpload = () => {
           )}
 
           {/* Processing State */}
-          {isProcessing && analysis && (
+          {isProcessing && (
             <div className="eco-card mt-6 animate-slide-up">
               <div className="flex items-center gap-4">
                 <Loader2 className="w-6 h-6 text-primary animate-spin flex-shrink-0" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-semibold text-foreground">Analyzing with NVIDIA VSS...</p>
-                    <span className="text-sm text-muted-foreground">{Math.round(analysis.progress)}%</span>
+                    <p className="font-semibold text-foreground">
+                      {analysis?.status === 'uploading' && 'Uploading video...'}
+                      {analysis?.status === 'processing' && 'Analyzing with NVIDIA VSS...'}
+                    </p>
+                    <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                     <div
                       className="bg-primary h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${analysis.progress}%` }}
+                      style={{ width: `${progress}%` }}
                     />
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    {analysis.status === 'uploading' && 'Uploading video...'}
-                    {analysis.status === 'processing' && 'Processing video frames and detecting safety events...'}
+                    {progress < 20 && 'Uploading video to VSS...'}
+                    {progress >= 20 && progress < 50 && 'Generating captions...'}
+                    {progress >= 50 && progress < 75 && 'Summarizing events...'}
+                    {progress >= 75 && 'Categorizing safety risks...'}
                   </p>
                 </div>
               </div>
