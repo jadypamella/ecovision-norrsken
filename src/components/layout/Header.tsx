@@ -8,7 +8,7 @@ const navLinks = [
   { path: '/upload', label: 'Upload', icon: Upload },
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/timeline', label: 'Timeline', icon: Clock },
-  { path: '/fixathon', label: 'Pitch Deck', icon: Trophy },
+  { path: '/fixathon', label: 'Fixathon', icon: Trophy },
 ];
 
 export const Header = () => {
