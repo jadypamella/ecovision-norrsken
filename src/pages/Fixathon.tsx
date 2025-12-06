@@ -15,7 +15,12 @@ import {
   AlertTriangle,
   CheckCircle,
   ExternalLink,
-  Sparkles
+  Sparkles,
+  Clock,
+  Zap,
+  Settings,
+  Globe,
+  Award
 } from 'lucide-react';
 
 import jadyPhoto from '@/assets/team/jady.jpg';
@@ -120,8 +125,7 @@ const Fixathon = () => {
               Challenge 2: AI Safety in Physical Environments
             </h1>
             <p className="text-xl text-primary-foreground/90 max-w-3xl mb-6">
-              How do we build Physical AI systems that don't just operate powerfully in the real world — 
-              but do so safely, transparently, and in alignment with human intentions?
+              How do we build Physical AI systems that don't just operate powerfully in the real world, but do so safely, transparently, and in alignment with human intentions?
             </p>
             <a 
               href="https://www.norrsken.org/fixathon-focus-areas/ai-safety" 
@@ -193,6 +197,29 @@ const Fixathon = () => {
           </div>
         </section>
 
+        {/* Why This Matters Now */}
+        <section className="py-16 bg-card">
+          <div className="section-container">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <Clock className="w-8 h-8 text-primary" />
+                <h2 className="text-3xl font-bold text-foreground">Why This Matters Now</h2>
+              </div>
+              <div className="eco-card">
+                <p className="text-lg text-foreground leading-relaxed mb-6">
+                  Forests are becoming harder to protect every year. Wildfires spread faster, extreme weather events are increasing, and illegal logging continues to expand into remote areas. Teams are collecting more drone footage than they can manually review, which delays action and increases risk for people, animals and ecosystems.
+                </p>
+                <p className="text-lg text-foreground leading-relaxed mb-6">
+                  <span className="text-primary font-semibold">EcoVision brings Physical AI Safety to an environment that needs fast and transparent decisions.</span> With real time alerts, explainable evidence, and human oversight, EcoVision gives forests a way to be seen before damage becomes irreversible.
+                </p>
+                <p className="text-lg text-primary font-semibold">
+                  The world is ready for a system like this, and NVIDIA VSS makes it possible today.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Safety Problems Solved */}
         <section className="py-16 bg-card">
           <div className="section-container">
@@ -216,6 +243,51 @@ const Fixathon = () => {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </section>
+
+        {/* How We Adapted NVIDIA VSS */}
+        <section className="py-16 bg-background">
+          <div className="section-container">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <Settings className="w-8 h-8 text-primary" />
+                <h2 className="text-3xl font-bold text-foreground">How We Adapted NVIDIA VSS for Forest Safety</h2>
+              </div>
+              <div className="eco-card">
+                <p className="text-lg text-foreground leading-relaxed mb-6">
+                  Most VSS blueprints are used in indoor scenes, urban environments or general video analytics. <span className="text-primary font-semibold">We adapted the blueprint specifically for forests and ecological risk detection.</span>
+                </p>
+                <h4 className="text-lg font-bold text-foreground mb-4">What we adapted for this challenge:</h4>
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Custom reasoning logic for environmental patterns</span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Mapping VSS tags to forest specific alerts like fire, clearing, fallen trees and wildlife</span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Severity scoring tailored for ecological risk</span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Event segmentation tuned for long drone flights</span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg sm:col-span-2">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">UI designed for ranger and environmental team workflows</span>
+                  </div>
+                </div>
+                <div className="p-4 bg-gradient-to-r from-primary/10 to-eco-forest-mist/10 rounded-xl border border-primary/20">
+                  <p className="text-foreground font-semibold text-center">
+                    This is not a generic VSS demo. This is a targeted Physical AI Safety system for real forest environments.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -258,6 +330,70 @@ const Fixathon = () => {
           </div>
         </section>
 
+        {/* What EcoVision Detected */}
+        <section className="py-16 bg-card">
+          <div className="section-container">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <Zap className="w-8 h-8 text-primary" />
+                <h2 className="text-3xl font-bold text-foreground">What EcoVision Detected in Our Demo</h2>
+              </div>
+              <div className="eco-card">
+                <p className="text-lg text-foreground leading-relaxed mb-6">
+                  To demonstrate real world impact, we processed sample drone footage through EcoVision.
+                </p>
+                <h4 className="text-lg font-bold text-foreground mb-4">EcoVision detected:</h4>
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                  <div className="flex items-center gap-3 p-3 bg-fire/10 rounded-lg">
+                    <Flame className="w-5 h-5 text-fire" />
+                    <span className="text-foreground">A fire event with high severity</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-fire/10 rounded-lg">
+                    <AlertTriangle className="w-5 h-5 text-fire" />
+                    <span className="text-foreground">Smoke, flame patterns and environment changes</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-storm/10 rounded-lg">
+                    <CloudRain className="w-5 h-5 text-storm" />
+                    <span className="text-foreground">Storm impact indicators like fallen trees</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-wildlife/10 rounded-lg">
+                    <Rabbit className="w-5 h-5 text-wildlife" />
+                    <span className="text-foreground">Wildlife movement</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-deforestation/10 rounded-lg sm:col-span-2">
+                    <Trees className="w-5 h-5 text-deforestation" />
+                    <span className="text-foreground">Early signs of deforestation through soil exposure and machinery detection</span>
+                  </div>
+                </div>
+                <h4 className="text-lg font-bold text-foreground mb-4">Every detection includes:</h4>
+                <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <Clock className="w-5 h-5 text-primary" />
+                    <span className="text-foreground text-sm">Timestamp in video</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <AlertTriangle className="w-5 h-5 text-primary" />
+                    <span className="text-foreground text-sm">Severity score</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <Eye className="w-5 h-5 text-primary" />
+                    <span className="text-foreground text-sm">Visual evidence</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <Brain className="w-5 h-5 text-primary" />
+                    <span className="text-foreground text-sm">AI reasoning</span>
+                  </div>
+                </div>
+                <div className="p-4 bg-gradient-to-r from-primary/10 to-eco-leaf-green/10 rounded-xl border border-primary/20">
+                  <p className="text-foreground font-semibold text-center">
+                    This proves that the system works end to end.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* AI Safety Principles */}
         <section className="py-16 bg-card">
           <div className="section-container">
@@ -291,6 +427,42 @@ const Fixathon = () => {
                 <a href="https://artificialintelligenceact.eu/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-2">EU AI Act</a> | 
                 <a href="https://www.nist.gov/itl/ai-risk-management-framework" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-2">NIST AI RMF</a>
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Why Our Team Can Make This Real */}
+        <section className="py-16 bg-background">
+          <div className="section-container">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <Award className="w-8 h-8 text-primary" />
+                <h2 className="text-3xl font-bold text-foreground">Why Our Team Can Make This Real</h2>
+              </div>
+              <div className="eco-card">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Strong background in AI, ML and data engineering</span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Proven ability to ship fast, reliable prototypes</span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Experience with real world environmental challenges</span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Deep understanding of VSS and Physical AI Safety</span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg sm:col-span-2">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Commitment to build tech that protects people and the planet</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -329,6 +501,91 @@ const Fixathon = () => {
                     <Eye className="w-8 h-8 mx-auto mb-2" />
                     <span className="text-sm font-medium">Lovable UI</span>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* The Vision */}
+        <section className="py-16 bg-card">
+          <div className="section-container">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <Globe className="w-8 h-8 text-primary" />
+                <h2 className="text-3xl font-bold text-foreground">The Vision</h2>
+              </div>
+              <div className="eco-card">
+                <p className="text-lg text-foreground leading-relaxed mb-6">
+                  EcoVision begins with forest safety, but the same Physical AI approach can support:
+                </p>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <Flame className="w-5 h-5 text-fire" />
+                    <span className="text-foreground">Disaster response</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <CloudRain className="w-5 h-5 text-storm" />
+                    <span className="text-foreground">Landslide and flood monitoring</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <Rabbit className="w-5 h-5 text-wildlife" />
+                    <span className="text-foreground">Wildlife protection</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <Eye className="w-5 h-5 text-primary" />
+                    <span className="text-foreground">Urban safety analysis</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <AlertTriangle className="w-5 h-5 text-deforestation" />
+                    <span className="text-foreground">Climate vulnerability</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <Brain className="w-5 h-5 text-primary" />
+                    <span className="text-foreground">Environmental intelligence</span>
+                  </div>
+                </div>
+                <div className="p-4 bg-gradient-to-r from-primary/10 to-eco-leaf-green/10 rounded-xl border border-primary/20">
+                  <p className="text-foreground font-semibold text-center">
+                    This is not just a tool. EcoVision is the start of a scalable platform for real time Physical AI Safety.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Demo Video Section */}
+        <section className="py-16 bg-background">
+          <div className="section-container">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <Video className="w-8 h-8 text-primary" />
+                <h2 className="text-3xl font-bold text-foreground">Watch the Demo</h2>
+              </div>
+              <div className="eco-card">
+                <p className="text-lg text-foreground leading-relaxed mb-6">
+                  See EcoVision in action. Watch our full demonstration video showing real-time forest safety detection powered by NVIDIA VSS.
+                </p>
+                <div className="aspect-video rounded-xl overflow-hidden border border-border">
+                  <iframe
+                    src="https://www.youtube.com/embed/SSAKVqXt2-A"
+                    title="EcoVision Demo"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+                <div className="mt-6 text-center">
+                  <a 
+                    href="https://www.youtube.com/watch?v=SSAKVqXt2-A"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-full font-medium transition-all"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                    Watch on YouTube
+                  </a>
                 </div>
               </div>
             </div>
