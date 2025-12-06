@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Leaf, Github, Twitter } from 'lucide-react';
+import { Leaf, Linkedin } from 'lucide-react';
 import ecoLogo from '@/assets/ecovision.png';
+
+const teamMembers = [
+  { name: 'Jady Pamella', linkedin: 'https://www.linkedin.com/in/jadypamella/' },
+  { name: 'Supun Chathuranga', linkedin: 'https://www.linkedin.com/in/supun-chathuranga-190372148/' },
+  { name: 'Phuwit Vititayanon', linkedin: 'https://www.linkedin.com/in/phuwit-vititayanon-4b6503157/' },
+];
 
 export const Footer = () => {
   return (
@@ -17,21 +23,20 @@ export const Footer = () => {
               AI-powered forest safety monitoring using NVIDIA Video Search & Summarization 
               Blueprint. Protecting forests through intelligent surveillance.
             </p>
-            <div className="flex items-center gap-4">
-              <a 
-                href="#" 
-                className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
-                aria-label="GitHub"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-              <a 
-                href="#" 
-                className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
+            <div className="flex items-center gap-3">
+              {teamMembers.map((member, index) => (
+                <a 
+                  key={index}
+                  href={member.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors group"
+                  aria-label={`${member.name} LinkedIn`}
+                  title={member.name}
+                >
+                  <Linkedin className="w-5 h-5 group-hover:text-primary transition-colors" />
+                </a>
+              ))}
             </div>
           </div>
 
@@ -73,7 +78,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/10 mt-8 pt-6 text-center text-sm text-primary-foreground/50">
-          <p>© 2025 EcoVision | Built for NVIDIA AI Safety Fixathon (Challenge 2)</p>
+          <p>© 2025 SU Heroes' EcoVision Solution | Built for NVIDIA AI Safety Fixathon (Challenge 2)</p>
         </div>
       </div>
     </footer>
