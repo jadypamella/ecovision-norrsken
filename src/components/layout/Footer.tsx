@@ -73,7 +73,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/10 mt-8 pt-6 text-center text-sm text-primary-foreground/50">
-          <p>© 2025 EcoVision | Built for NVIDIA AI Safety Fixathon</p>
+          <p>© 2025 EcoVision | Built for NVIDIA AI Safety Fixathon (Challenge 2)</p>
         </div>
       </div>
     </footer>

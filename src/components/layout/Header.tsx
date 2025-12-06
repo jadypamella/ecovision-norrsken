@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Upload, Clock, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Upload, Clock, Menu, X, Trophy } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import ecoLogo from '@/assets/ecovision.png';
@@ -8,6 +8,7 @@ const navLinks = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/upload', label: 'Upload', icon: Upload },
   { path: '/timeline', label: 'Timeline', icon: Clock },
+  { path: '/fixathon', label: 'Fixathon', icon: Trophy },
 ];
 
 export const Header = () => {

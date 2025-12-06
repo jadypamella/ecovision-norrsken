@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Upload from "./pages/Upload";
 import Timeline from "./pages/Timeline";
 import EventDetail from "./pages/EventDetail";
+import Fixathon from "./pages/Fixathon";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/timeline" element={<Timeline />} />
+          <Route path="/fixathon" element={<Fixathon />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
