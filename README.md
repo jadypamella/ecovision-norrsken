@@ -4,21 +4,13 @@
 
 ---
 
-## Main Information
-
-- **Repository**: https://github.com/jadypamella/ecovision-norrsken
-- **Challenge**: Norrsken Fixathon 2025 - Challenge 2: AI Safety in Physical Environments
-- **Technology**: NVIDIA Video Search & Summarization (VSS) Blueprint
-
----
-
 EcoVision is a Physical AI Safety Agent that transforms drone footage into real-time forest safety alerts. Using NVIDIA's Video Search & Summarization (VSS) blueprint, EcoVision detects wildfires, deforestation, storm damage, and wildlife activity in seconds, providing transparent, explainable insights that help protect ecosystems and communities.
 
 **This project was designed and built during the Fixathon by the SU Heroes team.**
 
 ---
 
-## 📌 Links & Resources
+## 📌 Quick Links & Resources
 
 Our pitch and demo are in the same YouTube video. You can watch it here:  
 **🎥 [YouTube Demo & Pitch Video](https://youtu.be/SSAKVqXt2-A)**
@@ -118,6 +110,33 @@ EcoVision integrates core Physical AI Safety principles from global frameworks:
 | **Human Oversight** | EU AI Act | EcoVision provides signals; humans retain control |
 | **Robustness & Physical Safety** | NIST AI RMF | Reliable early detection reduces risk for field teams |
 | **Fairness & Bias Reduction** | OECD | Consistent AI analysis minimizes subjective interpretation |
+
+---
+
+## ⚙️ System Architecture
+
+```
+Drone Video
+    ↓
+NVIDIA VSS Blueprint
+    • Video ingestion
+    • Vision Transformer embeddings
+    • Scene/temporal analysis
+    ↓
+EcoVision Safety Engine
+    • Fire, deforestation, storm, wildlife detection
+    • Context-aware reasoning
+    • Severity scoring
+    ↓
+Supabase Edge Functions
+    • Structured events and metadata
+    • Clips, timestamps, severity
+    ↓
+React Frontend (This Repository)
+    • Dashboard
+    • Timeline
+    • Explainable alerts
+```
 
 ---
 
@@ -229,7 +248,7 @@ The frontend connects to NVIDIA VSS through a Supabase Edge Function proxy:
 
 ---
 
-## ⚙️ Architecture & Key Components
+## 🏗️ What We Built - Architecture & Key Components
 
 ### System Architecture
 
@@ -366,6 +385,14 @@ src/
 ## 📝 License
 
 MIT License - NVIDIA AI Safety Fixathon Submission
+
+---
+
+## 🔗 Links
+
+- **Repository**: https://github.com/jadypamella/ecovision-norrsken
+- **Challenge**: Norrsken Fixathon 2025 - Challenge 2: AI Safety in Physical Environments
+- **Technology**: NVIDIA Video Search & Summarization (VSS) Blueprint
 
 ---
 
