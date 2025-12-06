@@ -4,8 +4,8 @@ import ecoLogo from '@/assets/ecovision.png';
 
 const teamMembers = [
   { name: 'Jady Pamella', linkedin: 'https://www.linkedin.com/in/jadypamella/' },
-  { name: 'Supun Chathuranga', linkedin: 'https://www.linkedin.com/in/supun-chathuranga-190372148/' },
   { name: 'Phuwit Vititayanon', linkedin: 'https://www.linkedin.com/in/phuwit-vititayanon-4b6503157/' },
+  { name: 'Supun Chathuranga', linkedin: 'https://www.linkedin.com/in/supun-chathuranga-190372148/' },
 ];
 
 export const Footer = () => {

@@ -26,20 +26,20 @@ const teamMembers = [
   {
     name: 'Jady Pamella',
     linkedin: 'https://www.linkedin.com/in/jadypamella/',
-    tagline: 'AI, Cybersecurity & IT Consultant',
+    tagline: 'AI and Technology Leader',
     photo: jadyPhoto
-  },
-  {
-    name: 'Supun Chathuranga',
-    linkedin: 'https://www.linkedin.com/in/supun-chathuranga-190372148/',
-    tagline: 'AI Engineer',
-    photo: supunPhoto
   },
   {
     name: 'Phuwit Vititayanon',
     linkedin: 'https://www.linkedin.com/in/phuwit-vititayanon-4b6503157/',
     tagline: 'AI maker, Data Scientist',
     photo: phuwitPhoto
+  },
+  {
+    name: 'Supun Chathuranga',
+    linkedin: 'https://www.linkedin.com/in/supun-chathuranga-190372148/',
+    tagline: 'AI Engineer',
+    photo: supunPhoto
   }
 ];
 
