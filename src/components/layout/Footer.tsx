@@ -16,7 +16,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <img src={ecoLogo} alt="EcoVision" className="h-12 w-auto brightness-0 invert" />
+              <img src={ecoLogo} alt="EcoVision" className="h-12 w-auto" />
               <span className="font-bold text-xl">EcoVision</span>
             </div>
             <p className="text-primary-foreground/70 text-sm max-w-md mb-4">
