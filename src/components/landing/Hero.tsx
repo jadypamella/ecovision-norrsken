@@ -15,7 +15,7 @@ export const Hero = () => {
         <div className="max-w-4xl">
           {/* Logo */}
           <div className="flex items-center gap-4 mb-8 animate-slide-up">
-            <img src={ecoLogo} alt="EcoVision" className="h-16 w-auto brightness-0 invert" />
+            <img src={ecoLogo} alt="EcoVision" className="h-16 w-auto" />
             <span className="text-2xl font-bold">EcoVision</span>
           </div>
 
