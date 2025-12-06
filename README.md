@@ -248,7 +248,7 @@ The frontend connects to NVIDIA VSS through a Supabase Edge Function proxy:
 
 ---
 
-## 🏗️ What We Built - Architecture & Key Components
+## Architecture & Key Components
 
 ### System Architecture
 
