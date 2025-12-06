@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { EventTypeBadge, SeverityBadge, getEventIcon } from '@/components/common/EventBadge';
 import { useAnalysis } from '@/contexts/AnalysisContext';
-import { ArrowLeft, Clock, MapPin, Percent, Video, AlertTriangle, FileVideo } from 'lucide-react';
+import { ArrowLeft, Clock, Percent, AlertTriangle, FileVideo, Database, FileText, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const formatTimestamp = (timestamp: string) => {
@@ -19,9 +19,10 @@ const formatTimestamp = (timestamp: string) => {
 
 const EventDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { getEventById, events } = useAnalysis();
+  const { getEventById, getAnalysisById, events } = useAnalysis();
   
   const event = id ? getEventById(id) : null;
+  const analysis = id ? getAnalysisById(id) : null;
 
   if (!event) {
     const hasEvents = events.length > 0;
@@ -33,7 +34,7 @@ const EventDetail = () => {
           <h2 className="text-xl font-semibold text-foreground mb-2">Event not found</h2>
           <p className="text-muted-foreground mb-4 text-center max-w-md">
             {hasEvents 
-              ? "This event doesn't exist in the current session. Events are stored temporarily during your session."
+              ? "This event doesn't exist. Try selecting an event from the timeline."
               : "No events have been analyzed yet. Upload a video to detect forest safety events."
             }
           </p>
@@ -145,6 +146,18 @@ const EventDetail = () => {
                     <p className="font-medium text-foreground">{Math.round(event.confidence * 100)}%</p>
                   </div>
                 </div>
+
+                {analysis && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                      <Database className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">VSS File ID</p>
+                      <p className="font-medium text-foreground font-mono text-sm">{analysis.fileId}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -177,6 +190,56 @@ const EventDetail = () => {
               </div>
             </div>
           </div>
+
+          {/* Raw VSS Data (if available) */}
+          {analysis && (
+            <div className="space-y-6 mb-6">
+              {/* Raw Captions */}
+              {analysis.rawCaptions && (
+                <div className="eco-card">
+                  <div className="flex items-center gap-2 mb-4">
+                    <FileText className="w-5 h-5 text-muted-foreground" />
+                    <h3 className="font-semibold text-foreground">VSS Raw Captions</h3>
+                  </div>
+                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-auto">
+                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
+                      {analysis.rawCaptions}
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              {/* Summary */}
+              {analysis.summary && (
+                <div className="eco-card">
+                  <div className="flex items-center gap-2 mb-4">
+                    <MessageSquare className="w-5 h-5 text-muted-foreground" />
+                    <h3 className="font-semibold text-foreground">VSS Summary</h3>
+                  </div>
+                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-auto">
+                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
+                      {analysis.summary}
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              {/* Aggregated Categories */}
+              {analysis.aggregated && (
+                <div className="eco-card">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Database className="w-5 h-5 text-muted-foreground" />
+                    <h3 className="font-semibold text-foreground">VSS Risk Categories</h3>
+                  </div>
+                  <div className="bg-muted/30 rounded-lg p-4 max-h-64 overflow-auto">
+                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
+                      {analysis.aggregated}
+                    </pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-wrap gap-4">
