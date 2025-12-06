@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Leaf, Linkedin } from 'lucide-react';
+import { Leaf, Linkedin, Youtube } from 'lucide-react';
 import ecoLogo from '@/assets/ecovision.png';
 
 const teamMembers = [
@@ -37,6 +37,16 @@ export const Footer = () => {
                   <Linkedin className="w-5 h-5 group-hover:text-primary transition-colors" />
                 </a>
               ))}
+              <a 
+                href="https://www.youtube.com/watch?v=SSAKVqXt2-A"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors group"
+                aria-label="Watch Demo on YouTube"
+                title="Watch Demo"
+              >
+                <Youtube className="w-5 h-5 group-hover:text-primary transition-colors" />
+              </a>
             </div>
           </div>
 
