@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 import ecoLogo from '@/assets/ecovision.png';
 
 const navLinks = [
-  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/upload', label: 'Upload', icon: Upload },
+  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/timeline', label: 'Timeline', icon: Clock },
   { path: '/fixathon', label: 'Fixathon', icon: Trophy },
 ];
