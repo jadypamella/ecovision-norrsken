@@ -10,6 +10,9 @@ interface AnalysisContextType {
   // All analyzed events (persisted in session)
   events: SafetyEvent[];
   
+  // Track analyzed videos
+  analyzedVideos: string[];
+  
   // Actions
   setCurrentAnalysis: (analysis: AnalysisResult | null) => void;
   setIsProcessing: (processing: boolean) => void;
@@ -27,9 +30,12 @@ const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined
 function convertToSafetyEvent(event: TimelineEvent, analysisId: string, fileName: string): SafetyEvent {
   const typeMap: Record<string, EventType> = {
     wildfire: 'fire',
+    fire: 'fire',
     poaching: 'wildlife',
     logging: 'deforestation',
+    deforestation: 'deforestation',
     wildlife: 'wildlife',
+    storm: 'storm',
     safe_human: 'wildlife',
   };
 
@@ -54,9 +60,12 @@ function convertToSafetyEvent(event: TimelineEvent, analysisId: string, fileName
 function getCategoryTitle(category: string): string {
   const titles: Record<string, string> = {
     wildfire: 'Wildfire Risk Detected',
+    fire: 'Fire Detected',
     poaching: 'Potential Poaching Activity',
     logging: 'Illegal Logging Activity',
+    deforestation: 'Deforestation Activity',
     wildlife: 'Wildlife Sighting',
+    storm: 'Storm Damage Detected',
     safe_human: 'Safe Human Activity',
   };
   return titles[category] || 'Event Detected';
@@ -66,8 +75,17 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [events, setEvents] = useState<SafetyEvent[]>([]);
+  const [analyzedVideos, setAnalyzedVideos] = useState<string[]>([]);
 
   const addEventsFromAnalysis = useCallback((analysis: AnalysisResult) => {
+    // Track this video as analyzed
+    setAnalyzedVideos(prev => {
+      if (!prev.includes(analysis.fileName)) {
+        return [...prev, analysis.fileName];
+      }
+      return prev;
+    });
+
     if (!analysis.events || analysis.events.length === 0) return;
     
     const newEvents = analysis.events.map(event => 
@@ -79,6 +97,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
 
   const clearEvents = useCallback(() => {
     setEvents([]);
+    setAnalyzedVideos([]);
   }, []);
 
   const getStats = useCallback((): DashboardStats => {
@@ -102,12 +121,12 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
 
     return {
       total_events: events.length,
-      total_flights: Math.max(1, Math.ceil(events.length / 5)),
+      total_flights: analyzedVideos.length,
       events_by_type: eventsByType,
       events_by_severity: eventsBySeverity,
       recent_events: events.slice(0, 4),
     };
-  }, [events]);
+  }, [events, analyzedVideos]);
 
   const getFilteredEvents = useCallback((type?: EventType | '', severity?: Severity | ''): SafetyEvent[] => {
     let filtered = [...events];
@@ -128,6 +147,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       currentAnalysis,
       isProcessing,
       events,
+      analyzedVideos,
       setCurrentAnalysis,
       setIsProcessing,
       addEventsFromAnalysis,
