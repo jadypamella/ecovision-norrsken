@@ -95,7 +95,7 @@ serve(async (req) => {
         const body = await req.json();
         console.log("Generating captions for file:", body.file_id);
         
-        response = await fetch(`${VSS_API_URL}/v1/files/${body.file_id}/summarize`, {
+        response = await fetch(`${VSS_API_URL}/files/${body.file_id}/summarize`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -110,7 +110,7 @@ serve(async (req) => {
         const body = await req.json();
         console.log("Summarizing video for file:", body.file_id);
         
-        response = await fetch(`${VSS_API_URL}/v1/files/${body.file_id}/summarize`, {
+        response = await fetch(`${VSS_API_URL}/files/${body.file_id}/summarize`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -125,7 +125,7 @@ serve(async (req) => {
         const body = await req.json();
         console.log("Chat completion for file:", body.file_id);
         
-        response = await fetch(`${VSS_API_URL}/v1/chat/completions`, {
+        response = await fetch(`${VSS_API_URL}/chat/completions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
