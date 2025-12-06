@@ -10,13 +10,23 @@ const corsHeaders = {
 
 // Sanitize filename to match VSS requirements: ^[A-Za-z0-9_.\- ]*$
 function sanitizeFilename(filename: string): string {
-  // Replace invalid characters with underscores
-  const sanitized = filename.replace(/[^A-Za-z0-9_.\- ]/g, '_');
-  // Ensure it's not empty
-  return sanitized || 'video.mp4';
+  // Get extension
+  const lastDot = filename.lastIndexOf('.');
+  const ext = lastDot > 0 ? filename.substring(lastDot) : '.mp4';
+  const name = lastDot > 0 ? filename.substring(0, lastDot) : filename;
+  
+  // Replace invalid characters with underscores, keep only alphanumeric, underscore, hyphen, space
+  const sanitizedName = name.replace(/[^A-Za-z0-9_\- ]/g, '_').substring(0, 50);
+  const sanitizedExt = ext.replace(/[^A-Za-z0-9.]/g, '');
+  
+  const result = (sanitizedName || 'video') + (sanitizedExt || '.mp4');
+  console.log(`Filename sanitization: "${filename}" -> "${result}"`);
+  return result;
 }
 
 serve(async (req) => {
+  console.log("VSS Proxy v2 - Request received");
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -39,6 +49,8 @@ serve(async (req) => {
 
     switch (action) {
       case "upload": {
+        console.log("Processing upload request...");
+        
         // Forward file upload to VSS with sanitized filename
         const originalFormData = await req.formData();
         const newFormData = new FormData();
@@ -47,19 +59,21 @@ serve(async (req) => {
           if (value instanceof File) {
             // Sanitize the filename
             const sanitizedName = sanitizeFilename(value.name);
-            console.log(`Sanitizing filename: "${value.name}" -> "${sanitizedName}"`);
-            const newFile = new File([value], sanitizedName, { type: value.type });
+            console.log(`Creating new file with sanitized name: ${sanitizedName}`);
+            const newFile = new File([value], sanitizedName, { type: value.type || 'video/mp4' });
             newFormData.append(key, newFile);
           } else {
             newFormData.append(key, value);
           }
         }
         
-        console.log("Uploading file to VSS...");
+        console.log("Uploading file to VSS API...");
         response = await fetch(`${VSS_API_URL}/v1/files`, {
           method: "POST",
           body: newFormData,
         });
+        
+        console.log(`VSS upload response status: ${response.status}`);
         break;
       }
 
@@ -79,7 +93,7 @@ serve(async (req) => {
 
       case "captions": {
         const body = await req.json();
-        console.log("Generating captions...", body.file_id);
+        console.log("Generating captions for file:", body.file_id);
         
         response = await fetch(`${VSS_API_URL}/v1/files/${body.file_id}/summarize`, {
           method: "POST",
@@ -94,7 +108,7 @@ serve(async (req) => {
 
       case "summarize": {
         const body = await req.json();
-        console.log("Summarizing video...", body.file_id);
+        console.log("Summarizing video for file:", body.file_id);
         
         response = await fetch(`${VSS_API_URL}/v1/files/${body.file_id}/summarize`, {
           method: "POST",
@@ -109,7 +123,7 @@ serve(async (req) => {
 
       case "chat": {
         const body = await req.json();
-        console.log("Chat completion...", body.file_id);
+        console.log("Chat completion for file:", body.file_id);
         
         response = await fetch(`${VSS_API_URL}/v1/chat/completions`, {
           method: "POST",
@@ -136,13 +150,13 @@ serve(async (req) => {
       const errorText = await response.text();
       console.error(`VSS API error (${response.status}):`, errorText);
       return new Response(
-        JSON.stringify({ error: `VSS API error: ${response.status}`, details: errorText }),
+        JSON.stringify({ error: `Upload failed: ${errorText}` }),
         { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const data = await response.json();
-    console.log("VSS Response:", JSON.stringify(data).substring(0, 200));
+    console.log("VSS Response success:", JSON.stringify(data).substring(0, 200));
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
