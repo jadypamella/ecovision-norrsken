@@ -4,6 +4,7 @@ import { EventChart } from '@/components/dashboard/EventChart';
 import { SeverityChart } from '@/components/dashboard/SeverityChart';
 import { VSSPipeline } from '@/components/dashboard/VSSPipeline';
 import { RecentEvents } from '@/components/dashboard/RecentEvents';
+import EventLocationMap from '@/components/map/EventLocationMap';
 import { useAnalysis } from '@/contexts/AnalysisContext';
 import { AlertTriangle, AlertCircle, Video, Flame, Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -70,6 +71,19 @@ const Dashboard = () => {
               <div className="grid lg:grid-cols-2 gap-6 mb-8">
                 <EventChart data={stats.events_by_type} />
                 <SeverityChart data={stats.events_by_severity} />
+              </div>
+
+              {/* Event Location Map */}
+              <div className="mb-8">
+                <EventLocationMap 
+                  events={events.map(e => ({
+                    id: e.id,
+                    title: e.title,
+                    type: e.type,
+                    lat: 0,
+                    lng: 0,
+                  }))}
+                />
               </div>
 
               {/* VSS Pipeline */}
