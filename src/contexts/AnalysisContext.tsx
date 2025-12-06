@@ -22,6 +22,7 @@ interface AnalysisContextType {
   // Computed stats
   getStats: () => DashboardStats;
   getFilteredEvents: (type?: EventType | '', severity?: Severity | '') => SafetyEvent[];
+  getEventById: (id: string) => SafetyEvent | null;
 }
 
 const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined);
@@ -142,6 +143,10 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
     return filtered;
   }, [events]);
 
+  const getEventById = useCallback((id: string): SafetyEvent | null => {
+    return events.find(e => e.id === id) || null;
+  }, [events]);
+
   return (
     <AnalysisContext.Provider value={{
       currentAnalysis,
@@ -154,6 +159,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       clearEvents,
       getStats,
       getFilteredEvents,
+      getEventById,
     }}>
       {children}
     </AnalysisContext.Provider>

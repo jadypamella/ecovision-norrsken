@@ -1,11 +1,8 @@
-import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { EventTypeBadge, SeverityBadge, getEventIcon } from '@/components/common/EventBadge';
-import { PageLoading } from '@/components/common/Loading';
-import { getEventById } from '@/services/api';
-import type { SafetyEvent } from '@/types';
-import { ArrowLeft, Clock, MapPin, Percent, Video, AlertTriangle } from 'lucide-react';
+import { useAnalysis } from '@/contexts/AnalysisContext';
+import { ArrowLeft, Clock, MapPin, Percent, Video, AlertTriangle, FileVideo } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const formatTimestamp = (timestamp: string) => {
@@ -22,43 +19,27 @@ const formatTimestamp = (timestamp: string) => {
 
 const EventDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [event, setEvent] = useState<SafetyEvent | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchEvent = async () => {
-      if (!id) return;
-      try {
-        const data = await getEventById(id);
-        setEvent(data);
-      } catch (error) {
-        console.error('Failed to fetch event:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvent();
-  }, [id]);
-
-  if (loading) {
-    return (
-      <Layout>
-        <PageLoading />
-      </Layout>
-    );
-  }
+  const { getEventById, events } = useAnalysis();
+  
+  const event = id ? getEventById(id) : null;
 
   if (!event) {
+    const hasEvents = events.length > 0;
+    
     return (
       <Layout>
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
           <AlertTriangle className="w-12 h-12 text-muted-foreground/50 mb-4" />
           <h2 className="text-xl font-semibold text-foreground mb-2">Event not found</h2>
-          <p className="text-muted-foreground mb-4">The event you're looking for doesn't exist</p>
-          <Link to="/timeline" className="btn-primary">
+          <p className="text-muted-foreground mb-4 text-center max-w-md">
+            {hasEvents 
+              ? "This event doesn't exist in the current session. Events are stored temporarily during your session."
+              : "No events have been analyzed yet. Upload a video to detect forest safety events."
+            }
+          </p>
+          <Link to={hasEvents ? "/timeline" : "/upload"} className="btn-primary">
             <ArrowLeft className="w-4 h-4" />
-            Back to Timeline
+            {hasEvents ? "Back to Timeline" : "Upload Video"}
           </Link>
         </div>
       </Layout>
@@ -146,10 +127,10 @@ const EventDetail = () => {
                 {event.location && (
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                      <MapPin className="w-5 h-5 text-muted-foreground" />
+                      <FileVideo className="w-5 h-5 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Location</p>
+                      <p className="text-sm text-muted-foreground">Video Source & Timestamp</p>
                       <p className="font-medium text-foreground">{event.location}</p>
                     </div>
                   </div>
@@ -167,13 +148,31 @@ const EventDetail = () => {
               </div>
             </div>
 
-            {/* Video Preview */}
+            {/* VSS Analysis Info */}
             <div className="eco-card">
-              <h3 className="font-semibold text-foreground mb-4">Video Evidence</h3>
-              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Video className="w-12 h-12 text-muted-foreground/50 mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Video clip not available</p>
+              <h3 className="font-semibold text-foreground mb-4">VSS Analysis</h3>
+              <div className="space-y-4">
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-1">Detection Type</p>
+                  <p className="font-medium text-foreground capitalize">{event.type.replace('_', ' ')}</p>
+                </div>
+                
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-1">Risk Level</p>
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      'w-3 h-3 rounded-full',
+                      event.severity === 'high' && 'bg-red-500',
+                      event.severity === 'medium' && 'bg-yellow-500',
+                      event.severity === 'low' && 'bg-green-500',
+                    )} />
+                    <p className="font-medium text-foreground capitalize">{event.severity}</p>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-1">Analysis Summary</p>
+                  <p className="text-sm text-foreground">{event.description}</p>
                 </div>
               </div>
             </div>
