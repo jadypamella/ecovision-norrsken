@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { EventTypeBadge, SeverityBadge, getEventIcon } from '@/components/common/EventBadge';
 import { useAnalysis } from '@/contexts/AnalysisContext';
-import { ArrowLeft, Clock, Percent, AlertTriangle, FileVideo, Database, FileText, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Clock, Percent, AlertTriangle, FileVideo, Database, FileText, MessageSquare, Film } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const formatTimestamp = (timestamp: string) => {
@@ -109,7 +109,7 @@ const EventDetail = () => {
             </div>
           </div>
 
-          {/* Event Details */}
+          {/* Event Details Grid */}
           <div className="grid sm:grid-cols-2 gap-6 mb-6">
             {/* Metadata */}
             <div className="eco-card">
@@ -128,7 +128,7 @@ const EventDetail = () => {
                 {event.location && (
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                      <FileVideo className="w-5 h-5 text-muted-foreground" />
+                      <Film className="w-5 h-5 text-muted-foreground" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Video Source & Timestamp</p>
@@ -148,20 +148,20 @@ const EventDetail = () => {
                 </div>
 
                 {analysis && (
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
                       <Database className="w-5 h-5 text-muted-foreground" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm text-muted-foreground">VSS File ID</p>
-                      <p className="font-medium text-foreground font-mono text-sm">{analysis.fileId}</p>
+                      <p className="font-medium text-foreground text-sm break-all">{analysis.fileId}</p>
                     </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* VSS Analysis Info */}
+            {/* VSS Analysis Summary */}
             <div className="eco-card">
               <h3 className="font-semibold text-foreground mb-4">VSS Analysis</h3>
               <div className="space-y-4">
@@ -175,17 +175,17 @@ const EventDetail = () => {
                   <div className="flex items-center gap-2">
                     <div className={cn(
                       'w-3 h-3 rounded-full',
-                      event.severity === 'high' && 'bg-red-500',
-                      event.severity === 'medium' && 'bg-yellow-500',
-                      event.severity === 'low' && 'bg-green-500',
+                      event.severity === 'high' && 'bg-severity-high',
+                      event.severity === 'medium' && 'bg-severity-medium',
+                      event.severity === 'low' && 'bg-severity-low',
                     )} />
                     <p className="font-medium text-foreground capitalize">{event.severity}</p>
                   </div>
                 </div>
 
                 <div className="p-4 bg-muted/50 rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Analysis Summary</p>
-                  <p className="text-sm text-foreground">{event.description}</p>
+                  <p className="text-sm text-muted-foreground mb-1">Event Description</p>
+                  <p className="text-sm text-foreground leading-relaxed">{event.description}</p>
                 </div>
               </div>
             </div>
@@ -198,13 +198,13 @@ const EventDetail = () => {
               {analysis.rawCaptions && (
                 <div className="eco-card">
                   <div className="flex items-center gap-2 mb-4">
-                    <FileText className="w-5 h-5 text-muted-foreground" />
+                    <FileText className="w-5 h-5 text-primary" />
                     <h3 className="font-semibold text-foreground">VSS Raw Captions</h3>
                   </div>
-                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-auto">
-                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
+                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-auto border border-border/50">
+                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                       {analysis.rawCaptions}
-                    </pre>
+                    </p>
                   </div>
                 </div>
               )}
@@ -213,13 +213,13 @@ const EventDetail = () => {
               {analysis.summary && (
                 <div className="eco-card">
                   <div className="flex items-center gap-2 mb-4">
-                    <MessageSquare className="w-5 h-5 text-muted-foreground" />
+                    <MessageSquare className="w-5 h-5 text-primary" />
                     <h3 className="font-semibold text-foreground">VSS Summary</h3>
                   </div>
-                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-auto">
-                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
+                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-auto border border-border/50">
+                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                       {analysis.summary}
-                    </pre>
+                    </p>
                   </div>
                 </div>
               )}
@@ -228,13 +228,13 @@ const EventDetail = () => {
               {analysis.aggregated && (
                 <div className="eco-card">
                   <div className="flex items-center gap-2 mb-4">
-                    <Database className="w-5 h-5 text-muted-foreground" />
+                    <Database className="w-5 h-5 text-primary" />
                     <h3 className="font-semibold text-foreground">VSS Risk Categories</h3>
                   </div>
-                  <div className="bg-muted/30 rounded-lg p-4 max-h-64 overflow-auto">
-                    <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
+                  <div className="bg-muted/30 rounded-lg p-4 max-h-64 overflow-auto border border-border/50">
+                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                       {analysis.aggregated}
-                    </pre>
+                    </p>
                   </div>
                 </div>
               )}
