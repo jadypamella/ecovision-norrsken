@@ -1,9 +1,12 @@
-import { useState, useCallback } from 'react';
+﻿import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Video, Loader2, CheckCircle, AlertCircle, X } from 'lucide-react';
 import { uploadVideo } from '@/services/api';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+
+const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
+const MIN_FILE_SIZE = 1024; // 1KB minimum
 
 export const VideoUpload = () => {
   const navigate = useNavigate();
@@ -13,6 +16,19 @@ export const VideoUpload = () => {
   const [progress, setProgress] = useState(0);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const validateFile = (file: File): string | null => {
+    if (!file.type.startsWith('video/')) {
+      return 'Please upload a video file (MP4, AVI, MOV)';
+    }
+    if (file.size < MIN_FILE_SIZE) {
+      return 'File is too small or empty. Please upload a valid video file.';
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return `File is too large. Maximum size is ${MAX_FILE_SIZE / (1024 * 1024)}MB`;
+    }
+    return null;
+  };
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -28,34 +44,51 @@ export const VideoUpload = () => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    
+
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && droppedFile.type.startsWith('video/')) {
-      setFile(droppedFile);
-      setError(null);
-    } else {
-      setError('Please upload a video file (MP4, AVI, MOV)');
+    if (droppedFile) {
+      const validationError = validateFile(droppedFile);
+      if (validationError) {
+        setError(validationError);
+        setFile(null);
+      } else {
+        setFile(droppedFile);
+        setError(null);
+      }
     }
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      setError(null);
+      const validationError = validateFile(selectedFile);
+      if (validationError) {
+        setError(validationError);
+        setFile(null);
+      } else {
+        setFile(selectedFile);
+        setError(null);
+      }
     }
   };
 
   const handleUpload = async () => {
     if (!file) return;
-    
+
+    // Double-check validation before upload
+    const validationError = validateFile(file);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setUploading(true);
     setProgress(0);
     setError(null);
-    
+
     try {
       const result = await uploadVideo(file, setProgress);
-      
+
       if (result.success) {
         setSuccess(true);
         toast({
@@ -63,11 +96,12 @@ export const VideoUpload = () => {
           description: `Detected ${result.events.length} safety events in your video.`,
         });
       }
-    } catch {
-      setError('Failed to analyze video. Please try again.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to analyze video. Please try again.';
+      setError(errorMessage);
       toast({
         title: 'Upload Failed',
-        description: 'There was an error processing your video.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -83,6 +117,9 @@ export const VideoUpload = () => {
   };
 
   const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) {
+      return `${bytes} bytes`;
+    }
     if (bytes < 1024 * 1024) {
       return `${(bytes / 1024).toFixed(1)} KB`;
     }
@@ -103,7 +140,7 @@ export const VideoUpload = () => {
                 Analysis Complete
               </h3>
               <p className="text-muted-foreground mb-4">
-                Your drone footage has been successfully analyzed using NVIDIA VSS. 
+                Your drone footage has been successfully analyzed using NVIDIA VSS.
                 Safety events have been detected and are ready for review.
               </p>
               <div className="flex flex-wrap gap-3">
@@ -152,7 +189,7 @@ export const VideoUpload = () => {
                   {!uploading && (
                     <button
                       onClick={handleReset}
-                      className="text-sm text-muted-foreground hover:text-destructive flex items-center gap-1 mx-auto transition-colors"
+                      className="text-sm text-muted-foreground hover:text-destructive flex items-center gap-1 mx-auto transition-colors"       
                     >
                       <X className="w-4 h-4" />
                       Remove
@@ -181,7 +218,7 @@ export const VideoUpload = () => {
                     />
                   </label>
                   <p className="text-xs text-muted-foreground mt-4">
-                    Supported formats: MP4, AVI, MOV (max 2GB)
+                    Supported formats: MP4, AVI, MOV (max 500MB)
                   </p>
                 </>
               )}

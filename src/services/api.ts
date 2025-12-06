@@ -1,4 +1,4 @@
-import type { DashboardStats, SafetyEvent, UploadResponse } from '@/types';
+﻿import type { DashboardStats, SafetyEvent, UploadResponse } from '@/types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8765';
 
@@ -89,7 +89,6 @@ export const getStats = async (): Promise<DashboardStats> => {
     if (!response.ok) throw new Error('Failed to fetch stats');
     return response.json();
   } catch {
-    // Return mock data for development
     return mockStats;
   }
 };
@@ -111,7 +110,6 @@ export const getEvents = async (params?: {
     if (!response.ok) throw new Error('Failed to fetch events');
     return response.json();
   } catch {
-    // Return filtered mock data
     let filtered = [...mockEvents];
     if (params?.event_type) {
       filtered = filtered.filter(e => e.type === params.event_type);
@@ -137,23 +135,47 @@ export const uploadVideo = async (
   file: File,
   onProgress?: (progress: number) => void
 ): Promise<UploadResponse> => {
-  // Simulate upload progress
-  return new Promise((resolve) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 15;
-      if (progress >= 100) {
-        clearInterval(interval);
-        onProgress?.(100);
-        resolve({
-          success: true,
-          flightId: `flight-${Date.now()}`,
-          events: mockEvents.slice(0, 3),
-          message: 'Video analyzed successfully',
-        });
-      } else {
-        onProgress?.(Math.min(progress, 95));
-      }
-    }, 500);
-  });
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const xhr = new XMLHttpRequest();
+
+    return new Promise((resolve, reject) => {
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const progress = (e.loaded / e.total) * 100;
+          onProgress?.(progress);
+        }
+      });
+
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            resolve({
+              success: true,
+              flightId: response.flight_id,
+              events: response.events || [],
+              message: response.message || 'Video analyzed successfully',
+            });
+          } catch (error) {
+            reject(new Error('Failed to parse response'));
+          }
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      });
+
+      xhr.addEventListener('error', () => {
+        reject(new Error('Upload failed'));
+      });
+
+      xhr.open('POST', `${API_URL}/api/upload`);
+      xhr.send(formData);
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    throw error;
+  }
 };
